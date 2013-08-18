@@ -38,17 +38,16 @@ var geocoders = {
         }
       }
     },
-    cicero: {
-      query: function(query, key) {
-        return 'https://cicero.azavea.com/v3.1/legislative_district?format=json&key=' + 
-          key + '&search_loc=' + query; 
+    google : {
+      query : function(query, key){
+        return 'http://maps.googleapis.com/maps/api/geocode/json?sensor=false&address='+query;
       },
-      parse: function(r) {
+      parse : function(r) {
         try {
           return {
-            longitude: r.response.results.candidates[0].x,
-            latitude: r.response.results.candidates[0].y,
-            accuracy: r.response.results.candidates[0].score
+            longitude: r.results[0].geometry.location.lng,
+            latitude: r.results[0].geometry.location.lat,
+            accuracy: ""
           }
         } catch(e) {
           return { longitude: '', latitude: '', accuracy: '' };
@@ -232,7 +231,7 @@ function gcDialog() {
     .setId('apiBox')
     .addItem('mapquest')
     .addItem('yahoo')
-    .addItem('cicero'));
+    .addItem('google'))
   grid.setWidget(1, 0, app.createLabel('API key:'));
   grid.setWidget(1, 1, app.createTextBox().setName('keyBox').setId('keyBox'));
 
@@ -405,7 +404,7 @@ function closeUiGc() {
 // Send address to api
 function getApiResponse(address, api, key) {
   var geocoder = geocoders[api],
-      url = geocoder.query(encodeURI(address), encodeURI(key));
+      url = geocoder.query(encodeURI((address), key));
   
   // If the geocoder returns a response, parse it and return components
   // If the geocoder responds poorly or doesn't response, try again
