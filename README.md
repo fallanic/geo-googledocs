@@ -1,6 +1,6 @@
 # Geo for Google Docs
 
-[Read the blog post & instructions for using this system](http://mapbox.com/blog/mapping-google-doc-spreadsheet/).
+[Read the instructions for using this system](http://www.mapbox.com/geo-for-google-docs/).
 
 ## A [MapBox](http://mapbox.com/) Project
 
