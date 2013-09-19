@@ -329,35 +329,45 @@ function geocode(e) {
   }
   
   // For each row, query the API and update the spreadsheet
-  for (var i = 0; i < rowData.length; i++) {
-    // Join all fields in selected row with a space
-    address = rowData[i].join(' ');
+    var i = 0;
+    function geocodeOne(i,limit){
+        if(i < limit){
 
-    // Concatenate all geo columns
-    if (longCol && latCol&& accCol) {
-      var testString = sheet.getRange(i + topRow, longCol, 1, 1).getValues()
-          + sheet.getRange(i + topRow, latCol, 1, 1).getValues() 
-          + sheet.getRange(i + topRow, accCol, 1, 1).getValues();
+        }else{
+            // Update UI to notify user the geocoding is done
+            closeUiGc();
+        }
+        // Join all fields in selected row with a space
+        address = rowData[i].join(' ');
+
+        // Concatenate all geo columns
+        if (longCol && latCol&& accCol) {
+            var testString = sheet.getRange(i + topRow, longCol, 1, 1).getValues()
+                + sheet.getRange(i + topRow, latCol, 1, 1).getValues()
+                + sheet.getRange(i + topRow, accCol, 1, 1).getValues();
+        }
+        // Test to see that all geo columns are empty
+        Logger.log(testString);
+        if (testString == '') {
+            // Send address to query the geocoding api
+            response = getApiResponse(address, api, key);
+
+            // Add responses to columns in the active spreadsheet
+            try {
+                sheet.getRange(i + topRow, longCol, 1, 1).setValue(response.longitude);
+                sheet.getRange(i + topRow, latCol, 1, 1).setValue(response.latitude);
+                sheet.getRange(i + topRow, accCol, 1, 1).setValue(response.accuracy);
+
+                i++;
+                wait(300);
+                geocodeOne(i,limit);
+            } catch(e) {
+                Logger.log(e);
+            }
+        }
     }
-    // Test to see that all geo columns are empty    
-    Logger.log(testString);
-    if (testString == '') {
-      // Send address to query the geocoding api
-      response = getApiResponse(address, api, key);
-  
-      // Add responses to columns in the active spreadsheet
-      try {
-        sheet.getRange(i + topRow, longCol, 1, 1).setValue(response.longitude);
-        sheet.getRange(i + topRow, latCol, 1, 1).setValue(response.latitude);
-        sheet.getRange(i + topRow, accCol, 1, 1).setValue(response.accuracy);
-      } catch(e) {
-        Logger.log(e);
-      }
-    }
-  }
-  
-  // Update UI to notify user the geocoding is done
-  closeUiGc();
+
+    geocodeOne(i,rowData.length);
 }
 
 // Check the spreadsheet to see if geo columns exist
