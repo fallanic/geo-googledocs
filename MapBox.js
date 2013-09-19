@@ -441,19 +441,16 @@ function getApiResponse(address, api, key) {
     // If no or bad response, sleep for 5 * i seconds and try again
     Logger.log('Something bad happened; retrying. Round: '+(i+1));
     for (var x = 0; x <= i; x++) {
-      if (x < 3) { wait(5) };
-      if (x = 3) { wait(60) };
-      if (x = 4) { wait(120) };
+      if (x < 3) { wait(5000) };
+      if (x = 3) { wait(60000) };
+      if (x = 4) { wait(120000) };
     }
   }
   Logger.log('Tried 5 times, giving up.');
 }
 
 function wait(ms) {
-  for (var i = 0; i < ms; i++) {
-    Logger.log('Sleeping for '+(i+1)+' seconds.');
-    Utilities.sleep(1000);
-  }
+    Utilities.sleep(ms);
 }
 
 // getRowsData iterates row by row in the input range and returns an array of objects.
